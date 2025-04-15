@@ -67,9 +67,11 @@ class BrowserManager {
                 reason: "Browser is not opened",
             }
         }
-        await this.page?.close()
+
         try {
-            this.page = await this.browser.newPage()
+            if (!this.page) {
+                this.page = await this.browser.newPage()
+            }
             await this.page.goto(url)
             return {
                 success: true
