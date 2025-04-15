@@ -9,7 +9,7 @@ interface ResultWithContent {
     content: Array<string> | string
 }
 
-interface ResultNoContent {
+export interface ResultNoContent {
     success: boolean
     reason?: string
 }

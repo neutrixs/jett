@@ -1,4 +1,3 @@
-import puppeteer, {Browser, Page} from "puppeteer";
 import readline from 'readline'
 import tools_config from "./tools_config";
 import OpenAI from "openai";
@@ -47,8 +46,6 @@ async function main() {
     let prevID: string | null = null
     let cachedInput: OpenAI.Responses.ResponseInput = []
     let currentResponse = firstResponse
-    let browser: Browser | null = null
-    let page: Page | null = null
 
     while (true) {
         //TODO: add a for loop, handle all responses
