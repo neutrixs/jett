@@ -67,16 +67,16 @@ const tools: OpenAI.Responses.Tool[] = [
         },
         description: "Open a URL in puppeteer"
     },
-    {
-        type: "web_search_preview",
-        user_location: {
-            city: "Bandung",
-            type: "approximate",
-            region: "West Java",
-            country: "ID"
-        },
-        search_context_size: "medium"
-    }
+    // {
+    //     type: "web_search_preview",
+    //     user_location: {
+    //         city: "Bandung",
+    //         type: "approximate",
+    //         region: "West Java",
+    //         country: "ID"
+    //     },
+    //     search_context_size: "medium"
+    // }
 ]
 
 export default tools
