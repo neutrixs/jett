@@ -66,8 +66,10 @@ async function main() {
             case "function_call": {
                 // if prev_id does not exist, that means this is the first message
                 // we have to reinclude the system prompt
+                // and the user message
                 if (!prevID) {
                     newInput.push(...prompt)
+                    newInput.push({role: 'user', content: firstInput})
                 }
 
                 const prev = currentResponse.output[0] as ResponseFunctionToolCall
