@@ -4,7 +4,7 @@ import tools_config from "./tools_config";
 import OpenAI from "openai";
 import prompt from "./prompt";
 import processFunction from "./tools";
-import {ResponseFunctionToolCall} from "openai/resources/responses/responses";
+import {ResponseFunctionToolCall, ResponseInputItem} from "openai/resources/responses/responses";
 
 const getUserInput = async (): Promise<string> => {
     return new Promise((resolve) => {
@@ -45,6 +45,7 @@ async function main() {
 
     // function calls are not considered
     let prevID: string | null = null
+    let fnResponseInput: OpenAI.Responses.ResponseInput = []
     let currentResponse = firstResponse
     let browser: Browser | null = null
     let page: Page | null = null
@@ -59,6 +60,8 @@ async function main() {
                 // because we need to include the previous input for function calling
                 // and putting its ID means it's a duplicate. it doesn't like it.
                 prevID = currentResponse.id
+                fnResponseInput = []
+
                 const userMessage = await getUserInput()
                 newInput.push({role: 'user', content: userMessage})
                 break
@@ -72,15 +75,21 @@ async function main() {
                     newInput.push({role: 'user', content: firstInput})
                 }
 
-                const prev = currentResponse.output[0] as ResponseFunctionToolCall
-                newInput.push(prev)
-                const result = await processFunction(prev)
+                newInput.push(...fnResponseInput)
+
+                const latestResponse = currentResponse.output[0] as ResponseFunctionToolCall
+                newInput.push(latestResponse)
+                fnResponseInput.push(latestResponse)
+                const result = await processFunction(latestResponse)
                 console.log(result)
-                newInput.push({
+
+                const caller: ResponseInputItem = {
                     type: 'function_call_output',
-                    call_id: prev.call_id,
+                    call_id: latestResponse.call_id,
                     output: result,
-                })
+                }
+                newInput.push(caller)
+                fnResponseInput.push(caller)
                 break
             }
         }
