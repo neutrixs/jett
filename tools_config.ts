@@ -19,7 +19,8 @@ const tools: OpenAI.Responses.Tool[] = [
                 },
                 action: {
                     type: "string",
-                    enum: ["set", "retrieve"]
+                    enum: ["set", "retrieve"],
+                    description: "What to do with the database"
                 }
             },
             additionalProperties: false
