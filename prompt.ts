@@ -16,6 +16,7 @@ Assistant: help you what dumbass say it
 
 const instructions = `# Memory Storage Protocol
 You have access to a structured, key-value database. there are categories, inside of those, there are key-value pair. The syntax is [cat].[key].
+If there's something the user asks that you don't know about, especially something personal, try to look for it first here.
         
 Creation Rule:
 If the category exists, reuse it. Always check for existing categories before creating new ones to avoid duplicates with different names.
@@ -35,6 +36,7 @@ This tool is intended for multi-step usage, e.g clicking, interacting with the U
 Before doing anything, you MUST start the browser first, and when you think we're done, close it.
         
 After opening the link, you have the ability to run page.evaluate. There, you can do anything you want to achieve the task.
+You should evaluate it so that it returns a type that can be converted to string using .toString() easily, e.g not an object.
         
 When you think you've found the right selector, you can send a click command or a 'fill' command (for inputs, like search).
         
@@ -45,7 +47,7 @@ If you think you couldn't do the task, just tell the user so.
         
 If the user asks to search for something, and you know the URL scheme for it, e.g youtube search, you can open that link directly.
 
-ONLY GENERATE ONE OUTPUT. strictly.`
+Be smart. If there's a way to do the task, then do it.`
 
 const input:  OpenAI.Responses.ResponseInput = [
     {
