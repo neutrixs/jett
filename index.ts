@@ -44,7 +44,7 @@ async function main() {
     })
 
     // function calls are not considered
-    let currentID: string | null = null
+    let prevID: string | null = null
     let currentResponse = firstResponse
     let browser: Browser | null = null
     let page: Page | null = null
@@ -58,7 +58,7 @@ async function main() {
                 // only message IDs are considered
                 // because we need to include the previous input for function calling
                 // and putting its ID means it's a duplicate. it doesn't like it.
-                currentID = currentResponse.id
+                prevID = currentResponse.id
                 const userMessage = await getUserInput()
                 newInput.push({role: 'user', content: userMessage})
                 break
@@ -66,7 +66,7 @@ async function main() {
             case "function_call": {
                 // if prev_id does not exist, that means this is the first message
                 // we have to reinclude the system prompt
-                if (!currentID) {
+                if (!prevID) {
                     newInput.push(...prompt)
                 }
 
@@ -85,7 +85,7 @@ async function main() {
 
         currentResponse = await client.responses.create({
             model: 'gpt-4.1-mini-2025-04-14',
-            previous_response_id: currentID,
+            previous_response_id: prevID,
             input: newInput,
             text: {
                 format: {
