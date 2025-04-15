@@ -113,7 +113,8 @@ class BrowserManager {
 
             puppeteer.launch({
                 headless: false,
-                userDataDir: path.resolve(process.cwd(), "db/browser")
+                userDataDir: path.resolve(process.cwd(), "db/browser"),
+                pipe: true,
             }).then(browser => {
                 this.browser = browser
                 r({success: true})
