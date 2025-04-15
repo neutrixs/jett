@@ -45,7 +45,7 @@ async function main() {
 
     // function calls are not considered
     let prevID: string | null = null
-    let fnResponseInput: OpenAI.Responses.ResponseInput = []
+    let cachedInput: OpenAI.Responses.ResponseInput = []
     let currentResponse = firstResponse
     let browser: Browser | null = null
     let page: Page | null = null
@@ -60,10 +60,12 @@ async function main() {
                 // because we need to include the previous input for function calling
                 // and putting its ID means it's a duplicate. it doesn't like it.
                 prevID = currentResponse.id
-                fnResponseInput = []
+                cachedInput = []
 
                 const userMessage = await getUserInput()
-                newInput.push({role: 'user', content: userMessage})
+                const newMessage: ResponseInputItem = {role: 'user', content: userMessage}
+                newInput.push(newMessage)
+                cachedInput.push(newMessage)
                 break
             }
             case "function_call": {
@@ -75,11 +77,11 @@ async function main() {
                     newInput.push({role: 'user', content: firstInput})
                 }
 
-                newInput.push(...fnResponseInput)
+                newInput.push(...cachedInput)
 
                 const latestResponse = currentResponse.output[0] as ResponseFunctionToolCall
                 newInput.push(latestResponse)
-                fnResponseInput.push(latestResponse)
+                cachedInput.push(latestResponse)
                 const result = await processFunction(latestResponse)
                 console.log(result)
 
@@ -89,7 +91,7 @@ async function main() {
                     output: result,
                 }
                 newInput.push(caller)
-                fnResponseInput.push(caller)
+                cachedInput.push(caller)
                 break
             }
         }
