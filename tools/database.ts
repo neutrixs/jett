@@ -61,6 +61,7 @@ export class Database {
         }
 
         this.data[cat][key] = content
+        this.sync()
         return ({
             success: true
         })
