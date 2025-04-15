@@ -64,6 +64,12 @@ async function main() {
                 break
             }
             case "function_call": {
+                // if prev_id does not exist, that means this is the first message
+                // we have to reinclude the system prompt
+                if (!currentID) {
+                    newInput.push(...prompt)
+                }
+
                 const prev = currentResponse.output[0] as ResponseFunctionToolCall
                 newInput.push(prev)
                 const result = await processFunction(prev)
