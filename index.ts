@@ -51,11 +51,12 @@ async function main() {
     let page: Page | null = null
 
     while (true) {
-        currentResponse.output.forEach(r => console.log(r))
+        //TODO: add a for loop, handle all responses
         const newInput: OpenAI.Responses.ResponseInput = []
 
         switch (currentResponse.output[0].type) {
             case "message": {
+                console.log(`Assistant: ${currentResponse.output_text}`)
                 // only message IDs are considered
                 // because we need to include the previous input for function calling
                 // and putting its ID means it's a duplicate. it doesn't like it.
@@ -69,6 +70,7 @@ async function main() {
                 break
             }
             case "function_call": {
+                console.log(`${currentResponse.output[0].name}(${currentResponse.output[0].arguments})`)
                 // if prev_id does not exist, that means this is the first message
                 // we have to reinclude the system prompt
                 // and the user message
