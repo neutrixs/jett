@@ -4,6 +4,9 @@ import OpenAI from "openai";
 import prompt from "./prompt";
 import processFunction from "./tools";
 import {ResponseFunctionToolCall, ResponseInputItem} from "openai/resources/responses/responses";
+import {ResponsesModel} from "openai/resources";
+
+const MODEL: ResponsesModel = "gpt-4.1-mini-2025-04-14"
 
 const getUserInput = async (): Promise<string> => {
     return new Promise((resolve) => {
@@ -27,7 +30,7 @@ async function main() {
     const firstInput = await getUserInput()
 
     const firstResponse = await client.responses.create({
-        model: 'gpt-4.1-mini-2025-04-14',
+        model: MODEL,
         input: [...prompt, {role: 'user', content: firstInput}],
         text: {
             format: {
@@ -96,7 +99,7 @@ async function main() {
         }
 
         currentResponse = await client.responses.create({
-            model: 'gpt-4.1-mini-2025-04-14',
+            model: MODEL,
             previous_response_id: prevID,
             input: newInput,
             text: {
