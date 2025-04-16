@@ -140,6 +140,7 @@ class BrowserManager {
                 pipe: true,
             }).then(browser => {
                 this.browser = browser
+                this.page = null
                 r({success: true})
             }).catch(e => {
                 r({success: false, reason: String(e)})
