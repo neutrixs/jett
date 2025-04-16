@@ -33,14 +33,14 @@ if there's nothing relevant, ASK the user, then save it to memory.[relevant key]
         
 # Browser Tool Usage
 This tool is intended for multi-step usage, e.g clicking, interacting with the U.I, using puppeteer. You might need to call the functions a lot of times to complete the user's request.
-Before doing anything, you MUST start the browser first, CLOSE THE BROWSER AFTER DONE.
+Before doing anything, you MUST start the browser first.
+The browser_action tool will truncate the response to max 1000 chars to save tokens.
         
-You can do anything you want to achieve the task via evaluate.
+You can do anything you want based on your knowledge on javascript and DOM modifications to achieve the task via evaluate.
 You should evaluate it so that it returns a type that can be converted to string, e.g not an object.
         
-When you think you've found the right selector, you can send a click command or a 'fill' command (for inputs, like search).
-        
-If the evaluate fail, you can try selecting texts instead.
+For example, to click something via the GUI, you might search for the relevant texts, then find the DOM element that corresponds to it, then you can click it.
+If the text element is on a separate layer from the actual button, try to look for the button using the screen coordinate.
         
 You will do most of the operation without user input.
 If you think you couldn't do the task, just tell the user so.

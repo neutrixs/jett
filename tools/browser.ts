@@ -1,6 +1,8 @@
 import puppeteer, {Browser, Page} from "puppeteer";
 import * as path from "node:path";
 
+const MAX_EVAL_CHARS = 1000
+
 export interface BrowserParam {
     action: 'open' | 'close'
 }
@@ -14,6 +16,14 @@ interface ActionResult {
     success: boolean,
     reason?: string,
     content?: string,
+}
+
+interface EvalResult {
+    success: boolean,
+    reason?: string,
+    content?: string,
+    currentURL?: string,
+    pageTitle?: string,
 }
 
 interface OpenCloseResult {
@@ -30,7 +40,7 @@ class BrowserManager {
         this.page = null
     }
 
-    public async browserAction(args: BrowserActionParam): Promise<ActionResult> {
+    public async browserAction(args: BrowserActionParam): Promise<ActionResult | EvalResult> {
         switch(args.action) {
             case "open_url": {
                 if (!args.value) return {
@@ -84,23 +94,36 @@ class BrowserManager {
         }
     }
 
-    private async evaluate(command: string): Promise<ActionResult> {
+    private async evaluate(command: string): Promise<EvalResult> {
         if (!this.page) return {
             success: false,
             reason: "No active pages"
         }
 
+        let result = ""
         try {
-            const result = String((await this.page.evaluate(command)))
-            return {
-                success: true,
-                content: result,
+            result = String((await this.page.evaluate(command)))
+        } catch (e: any) {
+            if (e.message.includes("Execution context was destroyed")) {
+                result = "[Page has been redirected/reloaded, please check the URL again]"
+            } else {
+                return {
+                    success: false,
+                    reason: String(e),
+                }
             }
-        } catch (e) {
-            return {
-                success: false,
-                reason: String(e),
-            }
+        }
+
+        let title = "[cannot get page title]"
+        try {
+            title = await this.page.title()
+        } catch (_) {}
+
+        return {
+            success: true,
+            content: result.length > MAX_EVAL_CHARS ? result.slice(0, MAX_EVAL_CHARS) : result,
+            currentURL: this.page.url(),
+            pageTitle: title,
         }
     }
 
@@ -117,6 +140,7 @@ class BrowserManager {
                 pipe: true,
             }).then(browser => {
                 this.browser = browser
+                this.page = null
                 r({success: true})
             }).catch(e => {
                 r({success: false, reason: String(e)})
