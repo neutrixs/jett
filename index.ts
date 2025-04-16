@@ -66,7 +66,11 @@ async function main() {
         const response = await request(client, [...inputCache, ...currentInput], prev_ids[0])
         prev_ids[0] = prev_ids[1]
         prev_ids[1] = response.id
-        inputCache = []
+        // if there's no reference to begin with
+        // we shouldn't reset the cache
+        if (prev_ids[0]) {
+            inputCache = []
+        }
 
         inputCache.push(...currentInput)
         currentInput = []
