@@ -55,12 +55,12 @@ const tools: OpenAI.Responses.Tool[] = [
             properties: {
                 value: {
                     type: "string",
-                    description: "The value to be passed to the functions. 'click' does not need this. Please provide the selector for input and click"
+                    description: "The value to be passed to the functions. Evaluate is basically like the browser's console, you can do everything there."
                 },
                 action: {
                     type: "string",
-                    enum: ["evaluate", "click", "input", "open_url"],
-                    description: "The action to do in puppeteer. Input is for inputting text boxes"
+                    enum: ["evaluate", "open_url"],
+                    description: "The action to do in puppeteer."
                 }
             },
             additionalProperties: false

@@ -1,6 +1,8 @@
 import puppeteer, {Browser, Page} from "puppeteer";
 import * as path from "node:path";
 
+const MAX_EVAL_CHARS = 1000
+
 export interface BrowserParam {
     action: 'open' | 'close'
 }
@@ -94,7 +96,7 @@ class BrowserManager {
             const result = String((await this.page.evaluate(command)))
             return {
                 success: true,
-                content: result,
+                content: result.length > MAX_EVAL_CHARS ? result.slice(0, MAX_EVAL_CHARS) : result,
             }
         } catch (e) {
             return {
