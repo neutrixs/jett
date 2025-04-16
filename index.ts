@@ -16,11 +16,13 @@ const getUserInput = async (): Promise<string> => {
             terminal: true,
         })
 
+        process.stdout.write('\x1b[90m')
         rl.prompt()
 
         // Listen for input and build the string
         rl.on('line', (input: string) => {
             rl.close()
+            process.stdout.write('\x1b[0m')
             resolve(input)
         });
     });
@@ -88,11 +90,11 @@ async function main() {
                     break
                 }
                 case "function_call": {
-                    console.log(`${output.name}(${output.arguments})`)
+                    console.log(`\x1b[32m${output.name}(${output.arguments})\x1b[0m`)
                     inputCache.push(output)
 
                     const result = await processFunction(output)
-                    console.log(result)
+                    // console.log(result)
 
                     currentInput.push({
                         type: 'function_call_output',
