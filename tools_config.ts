@@ -11,7 +11,7 @@ const tools: OpenAI.Responses.Tool[] = [
             properties: {
                 path: {
                     type: "string",
-                    description: "use [cat].[key] to set a value. to retrieve: [cat] = list keys, [cat].[key] = get value. example: memory.mark_instagram"
+                    description: "use [cat].[key] to set/delete a value. to retrieve: [cat]. example: memory.mark_instagram"
                 },
                 value: {
                     type: "string",
@@ -19,8 +19,8 @@ const tools: OpenAI.Responses.Tool[] = [
                 },
                 action: {
                     type: "string",
-                    enum: ["set", "retrieve"],
-                    description: "What to do with the database"
+                    enum: ["set", "retrieve", "delete"],
+                    description: "What to do with the database. Retrieve will return everything inside the category."
                 }
             },
             additionalProperties: false

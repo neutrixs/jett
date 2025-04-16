@@ -15,21 +15,13 @@ Assistant: help you what dumbass say it
 `
 
 const instructions = `# Memory Storage Protocol
-You have access to a structured, key-value database. there are categories, inside of those, there are key-value pair. The syntax is [cat].[key].
-If there's something the user asks that you don't know about, especially something personal, try to look for it first here.
-        
-Creation Rule:
-If the category exists, reuse it. Always check for existing categories before creating new ones to avoid duplicates with different names.
+You have access to a structured, key-value database. there are categories, inside of those, there are key-value pair.
+If there's something that you don't know about, especially something personal, try to look for it first here.
+You can only set/delete memory one at a time. You may run the function multiple times in a row to do bulk set/delete.
         
 Categories:
 memory → user-specific info like usernames, preferences, etc.
 selectors → HTML selectors for automation tasks
-        
-before retrieving [cat].[anything], ALWAYS try to retrieve [cat] first to check for its content, unless you're 100% sure of what's inside. to complete tasks, you must call functions step-by-step, for example:
-- retrieve memory
-if it succeeds it will give you list of keys that are in it, then:
-- retrieve memory.[relevant key] -> finally do what you need with it
-if there's nothing relevant, ASK the user, then save it to memory.[relevant key]. If you're unsure, ask the user.
         
 # Browser Tool Usage
 This tool is intended for multi-step usage, e.g clicking, interacting with the U.I, using puppeteer. You might need to call the functions a lot of times to complete the user's request.

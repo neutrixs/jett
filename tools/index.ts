@@ -1,5 +1,5 @@
 import OpenAI from "openai";
-import db, {DbParam, ResultNoContent} from "./database";
+import db, {DbParam} from "./database";
 import browser, {BrowserActionParam, BrowserParam} from "./browser";
 
 export default async function processFunction(call:  OpenAI.Responses.ResponseFunctionToolCall) {
@@ -7,26 +7,7 @@ export default async function processFunction(call:  OpenAI.Responses.ResponseFu
     switch (call.name) {
         case 'database': {
             const args: DbParam = JSON.parse(call.arguments)
-            switch (args.action) {
-                case 'retrieve': {
-                    const result = db.retrieve(args.path)
-                    output = JSON.stringify(result)
-                    break
-                }
-                case 'set': {
-                    const result = db.set(args.path, args.value)
-                    output = JSON.stringify(result)
-                    break
-                }
-                default: {
-                    const result: ResultNoContent = {
-                        success: false,
-                        reason: "Invalid action argument"
-                    }
-                    output = JSON.stringify(result)
-                    break
-                }
-            }
+            output = JSON.stringify(db.action(args))
             break
         }
         case 'browser': {

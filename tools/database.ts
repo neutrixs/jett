@@ -6,7 +6,7 @@ type Result = ResultWithContent | ResultNoContent
 interface ResultWithContent {
     success: boolean
     reason?: string
-    content: Array<string> | string
+    content: Record<string, string>
 }
 
 export interface ResultNoContent {
@@ -25,7 +25,12 @@ interface DbParamRetrieve {
     action: 'retrieve'
 }
 
-export type DbParam = DbParamSet | DbParamRetrieve
+interface DbParamDelete {
+    path: string,
+    action: 'delete'
+}
+
+export type DbParam = DbParamSet | DbParamRetrieve | DbParamDelete
 
 const path_relative = 'db/db.json'
 
@@ -46,7 +51,28 @@ export class Database {
         }
     }
 
-    public set(location: string, content: string): ResultNoContent {
+    public action(args: DbParam): Result | ResultNoContent {
+        switch (args.action) {
+            case 'set': {
+                return this.set(args.path, args.value)
+            }
+            case 'delete': {
+                return this.delete(args.path)
+            }
+            case 'retrieve': {
+                return this.retrieve(args.path)
+            }
+            // in case the A.I. goes wild
+            default: {
+                return {
+                    success: false,
+                    reason: "Invalid action",
+                }
+            }
+        }
+    }
+
+    public set(location: string, value: string): ResultNoContent {
         let split = location.split('.')
         if (split.length != 2) return ({
             success: false,
@@ -56,47 +82,56 @@ export class Database {
         let cat = split[0]
         let key = split[1]
 
-        if (!(cat in this.data)) {
-            this.data[cat] = {}
+        if (!(cat in this.data)) return {
+            success: false,
+            reason: `Category ${cat} does not exist`
         }
 
-        this.data[cat][key] = content
+        this.data[cat][key] = value
+
         this.sync()
         return ({
             success: true
         })
     }
 
-    public retrieve(location: string): Result {
-        let split = location.split('.')
-
-        let cat = split[0]
-        if (!(cat in this.data)) return ({
+    public delete(path: string): ResultNoContent {
+        let split = path.split('.')
+        if (split.length != 2) return ({
             success: false,
-            reason: "Category does not exist"
+            reason: "Invalid input syntax"
         })
 
-        switch(split.length) {
-            case 1: return ({
-                success: true,
-                content: Object.keys(this.data[cat])
-            })
-            case 2: {
-                let key = split[1]
-                if (!(key in this.data[cat])) return ({
-                    success: false,
-                    reason: "Key does not exist"
-                })
+        let cat = split[0]
+        let key = split[1]
 
-                return ({
-                    success: true,
-                    content: this.data[cat][key],
-                })
-            }
-            default: return ({
-                success: false,
-                reason: "Invalid input syntax"
-            })
+        if (!(cat in this.data)) return ({
+            success: false,
+            reason: `Category ${cat} does not exist`
+        })
+
+        if (!(key in this.data[cat])) return {
+            success: false,
+            reason: `Key ${key} does not exist`
+        }
+
+        delete this.data[cat][key]
+
+        this.sync()
+        return {
+            success: true
+        }
+    }
+
+    public retrieve(category: string): Result {
+        if (!(category in this.data)) return ({
+            success: false,
+            reason: `Category ${category} does not exist`
+        })
+
+        return {
+            success: true,
+            content: this.data[category]
         }
     }
 
