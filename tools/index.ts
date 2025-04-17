@@ -21,7 +21,7 @@ export default async function processFunction(call:  OpenAI.Responses.ResponseFu
             const args: BrowserParam = JSON.parse(call.arguments)
             switch(args.action) {
                 case 'open': {
-                    const result = await browser.open()
+                    const result = await browser.open(args.headless)
                     output = JSON.stringify(result)
                     break
                 }

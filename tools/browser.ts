@@ -45,8 +45,15 @@ interface OpenCloseResult {
 interface SearchResult {
     success: boolean
     reason?: string
-    content?: SerializedAXNode[]
+    content?: {
+        // Without the index property, the A.I may not be able to infer the array index correctly
+        // especially if it's a long array
+        index: number
+        data: SerializedAXNode
+    }[]
 }
+
+type ElementType<T> = T extends (infer U)[] ? U : never
 
 class BrowserManager {
     public browser: Browser | null
@@ -105,9 +112,14 @@ class BrowserManager {
 
         this.search_cache = cache
 
+        const result = cache.map((c, i): ElementType<SearchResult["content"]> => ({
+            index: i,
+            data: c,
+        }))
+
         return {
             success: true,
-            content: cache,
+            content: result,
         }
     }
 
