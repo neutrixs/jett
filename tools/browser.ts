@@ -1,8 +1,14 @@
-import puppeteer, {Browser, Page, SerializedAXNode} from "puppeteer";
+import {Browser, Page, SerializedAXNode} from "puppeteer";
+import puppeteer from "puppeteer-extra"
+import stealth from "puppeteer-extra-plugin-stealth"
+import adblocker from "puppeteer-extra-plugin-adblocker"
 import * as path from "node:path";
 
 const MAX_EVAL_CHARS = 1000
 const SEARCH_CHUNK_SIZE = 100
+
+puppeteer.use(stealth())
+puppeteer.use(adblocker({blockTrackers: true}))
 
 export interface BrowserParam {
     action: 'open' | 'close',

@@ -12,6 +12,9 @@
   "dependencies": {
     "openai": "^4.94.0",
     "puppeteer": "^24.6.1",
+    "puppeteer-extra": "^3.3.6",
+    "puppeteer-extra-plugin-adblocker": "^2.13.6",
+    "puppeteer-extra-plugin-stealth": "^2.11.2",
     "typescript": "^5.8.3"
   }
 }
