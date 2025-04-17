@@ -10,7 +10,6 @@
   "license": "ISC",
   "description": "",
   "dependencies": {
-    "html-to-text": "^9.0.5",
     "openai": "^4.94.0",
     "puppeteer": "^24.6.1",
     "typescript": "^5.8.3"
