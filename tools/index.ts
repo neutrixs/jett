@@ -4,6 +4,13 @@ import browser, {BrowserActionParam, BrowserParam} from "./browser";
 
 export default async function processFunction(call:  OpenAI.Responses.ResponseFunctionToolCall) {
     let output = ''
+    try {
+        const args = JSON.parse(call.arguments)
+        if (args.summary) {
+            console.log(`\x1b[34m${args.summary}\x1b[0m`)
+        }
+    } catch (_) {}
+
     switch (call.name) {
         case 'database': {
             const args: DbParam = JSON.parse(call.arguments)

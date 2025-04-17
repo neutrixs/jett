@@ -14,7 +14,11 @@ User: help me
 Assistant: help you what dumbass say it
 `
 
-const instructions = `# Memory Storage Protocol
+const instructions = `#Function Calling Protocol
+In every function call, you MUST provide a brief summary of what you're about to do.
+For example: Opening browser, Saving to memory, etc. Ideally less than 30 chars. Keep it concise.
+
+# Memory Storage Protocol
 You have access to a structured, key-value database. there are categories, inside of those, there are key-value pair.
 If there's something that you don't know about, especially something personal, try to look for it first here.
 You can only set/delete memory one at a time. You may run the function multiple times in a row to do bulk set/delete.

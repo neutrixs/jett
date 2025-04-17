@@ -90,7 +90,6 @@ async function main() {
                     break
                 }
                 case "function_call": {
-                    console.log(`\x1b[32m${output.name}(${output.arguments})\x1b[0m`)
                     inputCache.push(output)
 
                     const result = await processFunction(output)

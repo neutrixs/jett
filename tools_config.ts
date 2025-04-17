@@ -7,7 +7,7 @@ const tools: OpenAI.Responses.Tool[] = [
         strict: false,
         parameters: {
             type: "object",
-            required: ["path", "action"],
+            required: ["path", "action", "summary"],
             properties: {
                 path: {
                     type: "string",
@@ -21,7 +21,11 @@ const tools: OpenAI.Responses.Tool[] = [
                     type: "string",
                     enum: ["set", "retrieve", "delete"],
                     description: "What to do with the database. Retrieve will return everything inside the category."
-                }
+                },
+                summary: {
+                    type: "string",
+                    description: "Summary of your action"
+                },
             },
             additionalProperties: false
         },
@@ -33,13 +37,17 @@ const tools: OpenAI.Responses.Tool[] = [
         strict: true,
         parameters: {
             type: "object",
-            required: ["action"],
+            required: ["action", "summary"],
             properties: {
                 action: {
                     type: "string",
                     enum: ["open", "close"],
                     description: "Open/Close browser based on needs"
-                }
+                },
+                summary: {
+                    type: "string",
+                    description: "Summary of your action"
+                },
             },
             additionalProperties: false
         },
@@ -51,7 +59,7 @@ const tools: OpenAI.Responses.Tool[] = [
         strict: false,
         parameters: {
             type: "object",
-            required: ["action"],
+            required: ["action", "summary"],
             properties: {
                 value: {
                     type: "string",
@@ -61,7 +69,11 @@ const tools: OpenAI.Responses.Tool[] = [
                     type: "string",
                     enum: ["evaluate", "open_url"],
                     description: "The action to do in puppeteer."
-                }
+                },
+                summary: {
+                    type: "string",
+                    description: "Summary of your action"
+                },
             },
             additionalProperties: false
         },
