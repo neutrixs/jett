@@ -5,7 +5,8 @@ const MAX_EVAL_CHARS = 1000
 const SEARCH_CHUNK_SIZE = 100
 
 export interface BrowserParam {
-    action: 'open' | 'close'
+    action: 'open' | 'close',
+    headless?: boolean,
 }
 
 export interface BrowserActionParam {
@@ -241,7 +242,7 @@ class BrowserManager {
         }
     }
 
-    public open(): Promise<OpenCloseResult> {
+    public open(headless?: boolean): Promise<OpenCloseResult> {
         return new Promise(r => {
             if (this.browser) {
                 r({success: true})
@@ -249,7 +250,7 @@ class BrowserManager {
             }
 
             puppeteer.launch({
-                headless: false,
+                headless: headless ?? true,
                 userDataDir: path.resolve(process.cwd(), "db/browser"),
                 pipe: true,
             }).then(browser => {

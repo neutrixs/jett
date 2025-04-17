@@ -34,7 +34,7 @@ const tools: OpenAI.Responses.Tool[] = [
     {
         type: "function",
         name: "browser",
-        strict: true,
+        strict: false,
         parameters: {
             type: "object",
             required: ["action", "summary"],
@@ -43,6 +43,10 @@ const tools: OpenAI.Responses.Tool[] = [
                     type: "string",
                     enum: ["open", "close"],
                     description: "Open/Close browser based on needs"
+                },
+                headless: {
+                    type: "boolean",
+                    description: "Whether to use headless mode when opening. Don't specify for 'close'"
                 },
                 summary: {
                     type: "string",

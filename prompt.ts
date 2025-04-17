@@ -28,7 +28,7 @@ selectors → HTML selectors for automation tasks
         
 # Browser Tool Usage
 This tool is intended for multi-step usage, e.g clicking, interacting with the U.I, using puppeteer. You might need to call the functions a lot of times to complete the user's request.
-Before doing anything, you MUST start the browser first.
+Before doing anything, you MUST start the browser first. Use headless mode unless asked otherwise.
 The browser_action tool will truncate the response to max 1000 chars to save tokens.
         
 You can do anything you want based on your knowledge on javascript and DOM modifications to achieve the task via evaluate.
