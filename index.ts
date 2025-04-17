@@ -2,7 +2,7 @@ import readline from 'readline'
 import tools_config from "./tools_config";
 import OpenAI from "openai";
 import prompt from "./prompt";
-import processFunction from "./tools";
+import processFunction from "./tools/index";
 import {ResponseInput} from "openai/resources/responses/responses";
 import {ResponsesModel} from "openai/resources";
 
