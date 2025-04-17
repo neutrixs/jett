@@ -1,6 +1,6 @@
 import OpenAI from "openai";
 import db, {DbParam} from "./database";
-import browser, {BrowserActionParam, BrowserParam} from "./browser";
+import browser, {BrowserActionParam, BrowserParam, ClickParam, SearchParam} from "./browser";
 
 export default async function processFunction(call:  OpenAI.Responses.ResponseFunctionToolCall) {
     let output = ''
@@ -36,6 +36,24 @@ export default async function processFunction(call:  OpenAI.Responses.ResponseFu
         case 'browser_action': {
             const args: BrowserActionParam = JSON.parse(call.arguments)
             output = JSON.stringify(await browser.browserAction(args))
+            break
+        }
+        case 'screen_reader_get_snapshot': {
+            output = JSON.stringify(await browser.get_snapshot())
+            break
+        }
+        case 'screen_reader_search': {
+            const args: SearchParam = JSON.parse(call.arguments)
+            output = JSON.stringify(await browser.search(args.by, args.content, args.chunk))
+            break
+        }
+        case 'screen_reader_click': {
+            const args: ClickParam = JSON.parse(call.arguments)
+            output = JSON.stringify(await browser.click(args.index))
+            break
+        }
+        default: {
+            output = 'Unrecognized function call'
             break
         }
     }

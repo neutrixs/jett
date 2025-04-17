@@ -33,6 +33,26 @@ The browser_action tool will truncate the response to max 1000 chars to save tok
         
 You can do anything you want based on your knowledge on javascript and DOM modifications to achieve the task via evaluate.
 You should evaluate it so that it returns a type that can be converted to string, e.g not an object.
+Before using evaluate, you MUST try to use the screen reader first.
+
+#Screen Reader Guide
+
+The screen reader uses Puppeteer's Accessibility module which is based on Blink AX Tree.
+To read the screen, ALWAYS get a snapshot first, so that the elements won't change as you read through them. It will be cached internally.
+
+Then, you can search by role; or by name, e.g "Sign in", "Log in", etc. The search will return list of names.
+If you want to read the contents of the page, you might start by searching the role 'link' and StaticText. If you still can't find it, use other roles.
+
+Available roles: link, StaticText, button. There might be more but that's all you need.
+
+Search will only return at most 100 elements. If you want more, you can access the next chunk by using the chunk parameter.
+The search is also cached internally.
+If you want to do further action, e.g a click, note the index of it from the search result.
+Then you can send an action command to the screen reader using that index.
+
+If after a click action you need to do another task, you must run get snapshot again, because the contents may have changed.
+
+#Evaluate Guide
         
 For example, to click something via the GUI, you might search for the relevant texts, then find the DOM element that corresponds to it, then you can click it.
 If the text element is on a separate layer from the actual button, try to look for the button using the screen coordinate.

@@ -79,6 +79,73 @@ const tools: OpenAI.Responses.Tool[] = [
         },
         description: "Open a URL in puppeteer"
     },
+    {
+        type: "function",
+        name: "screen_reader_get_snapshot",
+        strict: true,
+        parameters: {
+            type: "object",
+            required: ["summary"],
+            properties: {
+                summary: {
+                    type: "string",
+                    description: "Summary of your action"
+                },
+            },
+            additionalProperties: false
+        }
+    },
+    {
+        type: "function",
+        name: "screen_reader_search",
+        description: "search through the snapshot either by its role or by its name",
+        strict: true,
+        parameters: {
+            type: "object",
+            required: ["by", "content", "summary", "chunk"],
+            properties: {
+                by: {
+                    type: "string",
+                    enum: ["role", "name"],
+                    description: "Search by role or name"
+                },
+                content: {
+                    type: "string",
+                    description: "The content to search for"
+                },
+                chunk: {
+                    type: "number",
+                    description: "Starts from 0. To go to the next chunk, simply increment the value by 1"
+                },
+                summary: {
+                    type: "string",
+                    description: "Summary of your action"
+                },
+            },
+            additionalProperties: false
+        }
+    },
+    {
+        type: "function",
+        name: "screen_reader_click",
+        description: "click on the element that matches the last search",
+        strict: true,
+        parameters: {
+            type: "object",
+            required: ["index", "summary"],
+            properties: {
+                index: {
+                    type: "number",
+                    description: "The index of the element to click from the last search"
+                },
+                summary: {
+                    type: "string",
+                    description: "Summary of your action"
+                },
+            },
+            additionalProperties: false,
+        }
+    }
     // {
     //     type: "web_search_preview",
     //     user_location: {
