@@ -2,6 +2,7 @@ import readline from 'readline'
 import tools_config from "./tools_config";
 import OpenAI from "openai";
 import prompt from "./prompt";
+import say from "say";
 import processFunction from "./tools/index";
 import {ResponseInput} from "openai/resources/responses/responses";
 import {ResponsesModel} from "openai/resources";
@@ -80,7 +81,9 @@ async function main() {
         for (const [index, output] of response.output.entries()) {
             switch (output.type) {
                 case "message": {
-                    console.log(`Assistant: ${output.content.map(c => c.type == 'output_text' ? c.text : c.refusal).join("\n")}`)
+                    const msg = output.content.map(c => c.type == 'output_text' ? c.text : c.refusal).join("\n")
+                    console.log(`Assistant: ${msg}`)
+                    say.speak(msg, "Microsoft David Desktop")
                     inputCache.push(output)
 
                     if (index != response.output.length - 1) break
