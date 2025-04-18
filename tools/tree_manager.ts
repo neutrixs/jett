@@ -1,5 +1,7 @@
 import { SerializedAXNode } from "puppeteer";
 
+const CHUNK_SIZE = 100
+
 // ID here is just the index path, joined by dot
 // example: 1.4.0.1
 
@@ -62,7 +64,7 @@ export default class TreeManager {
         }
     }
 
-    public dump(): ExportResult {
+    public dump(chunk: number): ExportResult {
         // this will always exist
         // because it's checked already in constructor
         let current = this.tree.children as SerializedAXNode[]
@@ -85,9 +87,11 @@ export default class TreeManager {
             id: [...this.traversal, i].join('.'),
         }))
 
+        const start = chunk * CHUNK_SIZE
+
         return {
             success: true,
-            content: result,
+            content: result.slice(start, start + CHUNK_SIZE),
         }
     }
 }
