@@ -101,4 +101,42 @@ export default class TreeManager {
             content: result.content.slice(start, end)
         }
     }
+
+    public async click(id: string): Promise<SimpleResult> {
+        const ids = id.split('.').map(c => parseInt(c))
+        if(ids.some(c => isNaN(c))) return {
+            success: false,
+            reason: "Invalid ID. ID must be numbers separated by dots"
+        }
+
+        // impossible to be undefined
+        // because ids could never be empty
+        const index = ids.pop() as number
+        const traverseResult = this.traverse(ids)
+        if (!traverseResult.success) return traverseResult
+
+        const element = this.currentTraversal[index]
+        if (!element) return {
+            success: false,
+            reason: `ID ${id} does not exist`
+        }
+
+        const handle = await element.elementHandle()
+        if (!handle) return {
+            success: false,
+            reason: `Element handle cannot be accessed. Maybe the element no longer exists?`
+        }
+
+        try {
+            await handle.click()
+        } catch (e) {
+            return {
+                success: false,
+                reason: `Element may no longer exists. Error: ${e}`,
+            }
+        }
+        return {
+            success: true
+        }
+    }
 }
