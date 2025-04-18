@@ -1,11 +1,11 @@
-import {Browser, Page, SerializedAXNode} from "puppeteer";
+import {Browser, Page} from "puppeteer";
 import puppeteer from "puppeteer-extra"
 import stealth from "puppeteer-extra-plugin-stealth"
 import adblocker from "puppeteer-extra-plugin-adblocker"
 import * as path from "node:path";
+import TreeManager, {SimpleResult} from "./tree_manager";
 
 const MAX_EVAL_CHARS = 1000
-const SEARCH_CHUNK_SIZE = 100
 
 puppeteer.use(stealth())
 puppeteer.use(adblocker({blockTrackers: true}))
@@ -20,14 +20,13 @@ export interface BrowserActionParam {
     value?: string
 }
 
-export interface SearchParam {
-    by: 'role' | 'name',
-    content: string,
-    chunk?: number,
+export interface DumpParam {
+    id: string
+    chunk: number
 }
 
 export interface ClickParam {
-    index: number
+    id: string
 }
 
 interface ActionResult {
@@ -49,116 +48,49 @@ interface OpenCloseResult {
     reason?: string
 }
 
-interface SearchResult {
-    success: boolean
-    reason?: string
-    content?: {
-        // Without the index property, the A.I may not be able to infer the array index correctly
-        // especially if it's a long array
-        index: number
-        data: SerializedAXNode
-    }[]
-}
-
-type ElementType<T> = T extends (infer U)[] ? U : never
-
 class BrowserManager {
     public browser: Browser | null
     public page: Page | null
-    private accessibility_snapshot: SerializedAXNode | null
-    private search_cache: SerializedAXNode[]
+    private tree: TreeManager | null
 
     public constructor() {
         this.browser = null
         this.page = null
-        this.accessibility_snapshot = null
-        this.search_cache = []
+        this.tree = null
     }
 
-    public async get_snapshot(): Promise<ActionResult> {
+    public async get_snapshot(): Promise<SimpleResult> {
         if (!this.page) return {
             success: false,
             reason: "No active pages"
         }
 
-        try {
-            this.accessibility_snapshot = await this.page.accessibility.snapshot()
-        } catch (e) {
-            return {
-                success: false,
-                reason: String(e),
-            }
+        const snapshot = await this.page.accessibility.snapshot()
+        if (!snapshot) return {
+            success: false,
+            reason: "Cannot get snapshot"
         }
+        this.tree = new TreeManager(snapshot)
 
         return {
-            success: true,
+            success: true
         }
     }
 
-    public async search(by: 'role' | 'name', content: string, chunk?: number): Promise<SearchResult> {
-        if (!this.page) return {
+    public dump(id: string, chunk: number): SimpleResult {
+        if (!this.tree) return {
             success: false,
-            reason: "No active pages"
+            reason: "No snapshot"
         }
-        if (!this.accessibility_snapshot) return {
-            success: false,
-            reason: "Please run get_snapshot first"
-        }
-
-        const searchResult = (this.accessibility_snapshot.children || []).filter(child => {
-            if (by == 'role') {
-                return child.role.toLowerCase() == content.toLowerCase()
-            } else if (by == 'name') {
-                return child.name?.toLowerCase() == content.toLowerCase()
-            }
-            return false
-        })
-
-        const startIndex = chunk ? chunk * SEARCH_CHUNK_SIZE : 0
-        const cache = searchResult.slice(startIndex, startIndex + SEARCH_CHUNK_SIZE)
-
-        this.search_cache = cache
-
-        const result = cache.map((c, i): ElementType<SearchResult["content"]> => ({
-            index: i,
-            data: c,
-        }))
-
-        return {
-            success: true,
-            content: result,
-        }
+        return this.tree.dump(id, chunk)
     }
 
-    public async click(index: number): Promise<ActionResult> {
-        if (!this.page) return {
+    public async click(id: string): Promise<SimpleResult> {
+        if (!this.tree) return {
             success: false,
-            reason: "No active pages"
+            reason: "No snapshot"
         }
-
-        if (!this.search_cache[index]) return {
-            success: false,
-            reason: "Index out of range. Make sure the index matches the output of search"
-        }
-
-        try {
-            const handle = await this.search_cache[index].elementHandle()
-            if (!handle) return {
-                success: false,
-                reason: "Element handle cannot be accessed"
-            }
-            await handle.click()
-        } catch (e) {
-            return {
-                success: false,
-                reason: String(e),
-            }
-        }
-
-        return {
-            success: true,
-            reason: "Click successful. Please re-check the current URL of the page. run get_snapshot if needed."
-        }
+        return await this.tree.click(id)
     }
 
     public async browserAction(args: BrowserActionParam): Promise<ActionResult | EvalResult> {

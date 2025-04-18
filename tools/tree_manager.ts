@@ -5,7 +5,7 @@ const CHUNK_SIZE = 100
 // ID here is just the index path, joined by dot
 // example: 1.4.0.1
 
-interface ExportResult {
+export interface ExportResult {
     success: boolean
     content?: {
         role: string
@@ -16,7 +16,7 @@ interface ExportResult {
     reason?: string
 }
 
-interface SimpleResult {
+export interface SimpleResult {
     success: boolean
     reason?: string
 }
@@ -136,7 +136,8 @@ export default class TreeManager {
             }
         }
         return {
-            success: true
+            success: true,
+            reason: `Element clicked. Please check the URL again`
         }
     }
 }
