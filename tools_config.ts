@@ -101,21 +101,16 @@ const tools: OpenAI.Responses.Tool[] = [
     },
     {
         type: "function",
-        name: "screen_reader_search",
-        description: "search through the snapshot either by its role or by its name",
+        name: "screen_reader_dump",
+        description: "get list of children inside an element",
         strict: true,
         parameters: {
             type: "object",
-            required: ["by", "content", "summary", "chunk"],
+            required: ["id", "summary", "chunk"],
             properties: {
-                by: {
+                id: {
                     type: "string",
-                    enum: ["role", "name"],
-                    description: "Search by role or name"
-                },
-                content: {
-                    type: "string",
-                    description: "The content to search for"
+                    description: "The ID of the parent element. Supply empty string to get the root elements"
                 },
                 chunk: {
                     type: "number",
@@ -132,15 +127,15 @@ const tools: OpenAI.Responses.Tool[] = [
     {
         type: "function",
         name: "screen_reader_click",
-        description: "click on the element that matches the last search",
+        description: "click on the element with specific ID",
         strict: true,
         parameters: {
             type: "object",
-            required: ["index", "summary"],
+            required: ["id", "summary"],
             properties: {
-                index: {
-                    type: "number",
-                    description: "The index of the element to click from the last search"
+                id: {
+                    type: "string",
+                    description: "The ID of the element to click"
                 },
                 summary: {
                     type: "string",

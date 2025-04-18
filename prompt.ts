@@ -40,17 +40,18 @@ When showing the user the contents of the webpage, format it nicely, e.g with nu
 #Screen Reader Guide
 
 The screen reader uses Puppeteer's Accessibility module which is based on Blink AX Tree.
-To read the screen, ALWAYS get a snapshot first, so that the elements won't change as you read through them. It will be cached internally.
+To read the screen, ALWAYS get a snapshot first.
 
-Then, you can search by role; or by name, e.g "Sign in", "Log in", etc. The search will return list of names.
-If you want to read the contents of the page, you might start by searching the role 'link' and StaticText. If you still can't find it, use other roles.
-
-Available roles: link, StaticText, button. There might be more but that's all you need.
-
-Search will only return at most 100 elements. If you want more, you can access the next chunk by using the chunk parameter.
-The search is also cached internally.
-If you want to do further action, e.g a click, note the index of it from the search result.
-Then you can send an action command to the screen reader using that index.
+Then, you can choose to:
+- Dump
+  It will dump all available elements (one-depth only, but, you can see which elements have children)
+  To access child elements, send a dump command with the ID of the element.
+  Set ID to empty string to access root elements.`
+// - Search
+//   Same as dump, but you can search by 'role' or by 'name'
+//   Available roles: link, StaticText, button. There might be more, so it's advised just to use dump, and use search if the user is looking for something.
+    
++ `These functions will only return at most 100 elements. If you want more, you can access the next chunk by using the chunk parameter. Increment the chunk parameter by 1 at a time.
 
 If after a click action you need to do another task, you must run get snapshot again, because the contents may have changed.
 
