@@ -44,18 +44,14 @@ To read the screen, ALWAYS get a snapshot first.
 
 Then, you can choose to:
 - Dump
-  It will dump all available elements (one-depth only, but, you can see which elements have children)
-- Search
-  Same as dump, but you can search by 'role' or by 'name'
-  Available roles: link, StaticText, button. There might be more, so it's advised just to use dump, and use search if the user is looking for something.
+  It will dump all available elements (one-depth only, but, you can see which elements have children)`
+// - Search
+//   Same as dump, but you can search by 'role' or by 'name'
+//   Available roles: link, StaticText, button. There might be more, so it's advised just to use dump, and use search if the user is looking for something.
     
-These functions will only return at most 100 elements. If you want more, you can access the next chunk by using the chunk parameter.
-If you want to do further action such as click, traverse_down, note the ID of it from the result.
-Then you can send an action command to the screen reader using that ID.
-
-For example, if you wanna see all the children of an element, you note the ID of it, then send a traverse command to that ID, then you can run dump or search again, and so on.
-you can only traverse to an element which has children.
-traverse_up is also available to go back to the parent element. It will return an error if the element is root.
++ `These functions will only return at most 100 elements. If you want more, you can access the next chunk by using the chunk parameter. Increment the chunk parameter by 1 at a time.
+To access child elements, send a dump/search command with the ID of the element.
+Set ID to empty string to access root elements.
 
 If after a click action you need to do another task, you must run get snapshot again, because the contents may have changed.
 
