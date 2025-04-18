@@ -81,7 +81,7 @@ export default class TreeManager {
             role: c.role,
             name: c.name || '',
             hasChildren: !!c.children,
-            id: `${ids.join('.')}.${i}`
+            id: [...ids.join('.'), i].join(".")
         }))
 
         return {
