@@ -72,6 +72,8 @@ do not use google to search. use duckduckgo.
 If the user gives you step-by-step instructions to complete a task (like using evaluate), you must store it in the SELECTORS (not memory) database.
 Use a simple, clear name like github_repo_star_amount. The value should be a readable sentence that you can understand and follow later on.
 For example, "github_repo_star_amount":"find aria-label named \"Repository details\", then look in its children for the star count"
+
+If the user asks you to modify the instruction content, do NOT modify anything else in the instruction that is not mentioned.
 `
 
 const input:  OpenAI.Responses.ResponseInput = [
