@@ -1,6 +1,6 @@
 import { SerializedAXNode } from "puppeteer";
 
-const CHUNK_SIZE = 100
+const CHUNK_SIZE = 10
 
 // ID here is just the index path, joined by dot
 // example: 1.4.0.1

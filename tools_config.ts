@@ -55,15 +55,15 @@ const tools: OpenAI.Responses.Tool[] = [
             },
             additionalProperties: false
         },
-        description: "Open a URL in puppeteer"
+        description: "To open or close browser"
     },
     {
         type: "function",
         name: "browser_action",
-        strict: false,
+        strict: true,
         parameters: {
             type: "object",
-            required: ["action", "summary"],
+            required: ["action", "summary", "value"],
             properties: {
                 value: {
                     type: "string",
@@ -81,7 +81,7 @@ const tools: OpenAI.Responses.Tool[] = [
             },
             additionalProperties: false
         },
-        description: "Open a URL in puppeteer"
+        description: "To evaluate something in the browser, or opening a url"
     },
     {
         type: "function",
