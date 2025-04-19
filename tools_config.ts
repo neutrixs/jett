@@ -60,10 +60,10 @@ const tools: OpenAI.Responses.Tool[] = [
     {
         type: "function",
         name: "browser_action",
-        strict: false,
+        strict: true,
         parameters: {
             type: "object",
-            required: ["action", "summary"],
+            required: ["action", "summary", "value"],
             properties: {
                 value: {
                     type: "string",
