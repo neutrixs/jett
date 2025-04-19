@@ -21,6 +21,7 @@ For example: Opening browser, Saving to memory, etc. Ideally less than 30 chars.
 You have access to a structured, key-value database. there are categories, inside of those, there are key-value pair.
 If there's something that you don't know about, especially something personal, try to look for it first here.
 You can only set/delete memory one at a time. You may run the function multiple times in a row to do bulk set/delete.
+Set will overwrite the previous value.
         
 Categories:
 memory → user-specific info like usernames, preferences, etc.
@@ -31,8 +32,7 @@ This tool is intended for multi-step usage, e.g clicking, interacting with the U
 Before doing anything, you MUST start the browser first. Use headless mode unless asked otherwise.
 The browser_action tool will truncate the response to max 1000 chars to save tokens.
         
-You can do anything you want based on your knowledge on javascript and DOM modifications to achieve the task via evaluate.
-You should evaluate it so that it returns a type that can be converted to string, e.g not an object.
+If using evaluate, you should do it so that it returns a type that can be converted to string, e.g not an object.
 Before using evaluate, you MUST try to use the screen reader first.
 
 When showing the user the contents of the webpage, format it nicely, e.g with numbered lists for headlines.
@@ -66,7 +66,12 @@ If you think you couldn't do the task, just tell the user so.
 If the user asks to search for something, and you know the URL scheme for it, e.g youtube search, duckduckgo, you can open that link directly.
 do not use google to search. use duckduckgo.
 
-Be smart. If there's a way to do the task, then do it.`
+#Custom User Instruction
+
+If the user gives you step-by-step instructions to complete a task (like using evaluate), you must store it in the selectors database.
+Use a simple, clear name like github_repo_star_amount. The value should be a readable sentence that you can understand and follow later on.
+For example, "github_repo_star_amount":"find aria-label named \"Repository details\", then look in its children for the star count"
+`
 
 const input:  OpenAI.Responses.ResponseInput = [
     {
