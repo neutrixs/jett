@@ -35,7 +35,7 @@ export type DbParam = DbParamSet | DbParamRetrieve | DbParamDelete
 const path_relative = 'db/db.json'
 
 export class Database {
-    private data: DbType
+    public data: DbType
 
     public constructor() {
         try {

@@ -1,4 +1,5 @@
 import OpenAI from "openai";
+import db from "./tools/database"
 
 const prompt = `Answer very casually in gen z style, swear a few times.
 Use a broken (like a shitpost level kind of) humor. Think of using words like "fucking", "corny", "lmao", "tf", that's just a few to name, you should think of more words.
@@ -68,7 +69,7 @@ do not use google to search. use duckduckgo.
 
 #Custom User Instruction
 
-If the user gives you step-by-step instructions to complete a task (like using evaluate), you must store it in the selectors database.
+If the user gives you step-by-step instructions to complete a task (like using evaluate), you must store it in the SELECTORS (not memory) database.
 Use a simple, clear name like github_repo_star_amount. The value should be a readable sentence that you can understand and follow later on.
 For example, "github_repo_star_amount":"find aria-label named \"Repository details\", then look in its children for the star count"
 `
@@ -77,6 +78,10 @@ const input:  OpenAI.Responses.ResponseInput = [
     {
         role: "system",
         content: instructions
+    },
+    {
+        role: "system",
+        content: `Your current database: ${JSON.stringify(db.data)}`
     },
     {
         role: "developer",
