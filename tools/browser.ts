@@ -72,10 +72,18 @@ class BrowserManager {
             success: false,
             reason: "Cannot get snapshot"
         }
-        this.tree = new TreeManager(snapshot)
 
-        return {
-            success: true
+        try{
+            this.tree = new TreeManager(snapshot)
+
+            return {
+                success: true
+            }
+        } catch (e) {
+            return {
+                success: false,
+                reason: String(e),
+            }
         }
     }
 
