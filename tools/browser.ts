@@ -10,14 +10,16 @@ const MAX_EVAL_CHARS = 1000
 puppeteer.use(stealth())
 puppeteer.use(adblocker({blockTrackers: true}))
 
-export interface BrowserParam {
-    action: 'open' | 'close',
-    headless?: boolean,
+export interface BrowserOpenParam {
+    headless: boolean
 }
 
-export interface BrowserActionParam {
-    action: 'open_url' | 'evaluate' | 'click' | 'input',
-    value?: string
+export interface BrowserOpenURLParam {
+    url: string
+}
+
+export interface BrowserEvaluateParam {
+    command: string
 }
 
 export interface DumpParam {
@@ -93,37 +95,7 @@ class BrowserManager {
         return await this.tree.click(id)
     }
 
-    public async browserAction(args: BrowserActionParam): Promise<ActionResult | EvalResult> {
-        switch(args.action) {
-            case "open_url": {
-                if (!args.value) return {
-                    success: false,
-                    reason: "Value is required for action open_url"
-                }
-                return this.openURL(args.value)
-            }
-            case "evaluate": {
-                if (!args.value) return {
-                    success: false,
-                    reason: "Value is required for action evaluate"
-                }
-                return this.evaluate(args.value)
-            }
-            case "click":
-            case "input":{
-                return {
-                    success: false,
-                    reason: "Function not yet supported"
-                }
-            }
-            default: return ({
-                success: false,
-                reason: "Unrecognized action"
-            })
-        }
-    }
-
-    private async openURL(url: string): Promise<ActionResult> {
+    public async openURL(url: string): Promise<ActionResult> {
         if (!this.browser) {
             return {
                 success: false,
@@ -147,7 +119,7 @@ class BrowserManager {
         }
     }
 
-    private async evaluate(command: string): Promise<EvalResult> {
+    public async evaluate(command: string): Promise<EvalResult> {
         if (!this.page) return {
             success: false,
             reason: "No active pages"
