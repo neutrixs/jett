@@ -53,6 +53,7 @@ Then, you can choose to:
 //   Available roles: link, StaticText, button. There might be more, so it's advised just to use dump, and use search if the user is looking for something.
     
 + `These functions will only return at most 10 elements. If you want more, you can access the next chunk by using the chunk parameter. Increment the chunk parameter by 1 at a time.
+REFRAIN from accessing more than 2 chunks, TO SAVE TOKENS, please confirm with the user first.
 
 If after a click action you need to do another task, you must run get snapshot again, because the contents may have changed.
 
