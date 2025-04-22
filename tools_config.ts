@@ -11,7 +11,7 @@ const tools: OpenAI.Responses.Tool[] = [
             properties: {
                 path: {
                     type: "string",
-                    description: "use [cat].[key] to set/delete a value. to retrieve: [cat]. example: memory.mark_instagram"
+                    description: "use [cat].[key] to set/delete a value. example: memory.mark_instagram"
                 },
                 value: {
                     type: "string",
@@ -19,7 +19,7 @@ const tools: OpenAI.Responses.Tool[] = [
                 },
                 action: {
                     type: "string",
-                    enum: ["set", "retrieve", "delete"],
+                    enum: ["set", "delete"],
                     description: "What to do with the database. Retrieve will return everything inside the category."
                 },
                 summary: {
@@ -33,46 +33,15 @@ const tools: OpenAI.Responses.Tool[] = [
     },
     {
         type: "function",
-        name: "browser",
-        strict: false,
-        parameters: {
-            type: "object",
-            required: ["action", "summary"],
-            properties: {
-                action: {
-                    type: "string",
-                    enum: ["open", "close"],
-                    description: "Open/Close browser based on needs"
-                },
-                headless: {
-                    type: "boolean",
-                    description: "Whether to use headless mode when opening. Don't specify for 'close'"
-                },
-                summary: {
-                    type: "string",
-                    description: "Summary of your action"
-                },
-            },
-            additionalProperties: false
-        },
-        description: "To open or close browser"
-    },
-    {
-        type: "function",
-        name: "browser_action",
+        name: "browser_open",
         strict: true,
         parameters: {
             type: "object",
-            required: ["action", "summary", "value"],
+            required: ["headless", "summary"],
             properties: {
-                value: {
-                    type: "string",
-                    description: "The value to be passed to the functions. Evaluate is basically like the browser's console, you can do everything there."
-                },
-                action: {
-                    type: "string",
-                    enum: ["evaluate", "open_url"],
-                    description: "The action to do in puppeteer."
+                headless: {
+                    type: "boolean",
+                    description: "Whether to use headless mode"
                 },
                 summary: {
                     type: "string",
@@ -81,7 +50,66 @@ const tools: OpenAI.Responses.Tool[] = [
             },
             additionalProperties: false
         },
-        description: "To evaluate something in the browser, or opening a url"
+        description: "To open browser"
+    },
+    {
+        type: "function",
+        name: "browser_close",
+        strict: true,
+        parameters: {
+            type: "object",
+            required: ["summary"],
+            properties: {
+                summary: {
+                    type: "string",
+                    description: "Summary of your action"
+                },
+            },
+            additionalProperties: false
+        },
+        description: "To close browser"
+    },
+    {
+        type: "function",
+        name: "browser_open_url",
+        description: "Open a url in the browser",
+        strict: true,
+        parameters: {
+            type: "object",
+            required: ["url", "summary"],
+            properties: {
+                url: {
+                    type: "string",
+                    description: "The url to open"
+                },
+                summary: {
+                    type: "string",
+                    description: "Summary of your action"
+                },
+            },
+            additionalProperties: false
+        }
+    },
+    {
+        type: "function",
+        name: "browser_evaluate",
+        description: "Evaluate commands in the browser console. Only use as last resort",
+        strict: true,
+        parameters: {
+            type: "object",
+            required: ["command", "summary"],
+            properties: {
+                command: {
+                    type: "string",
+                    description: "The command to be passed to the functions. Evaluate is basically like the browser's console, you can do everything there"
+                },
+                summary: {
+                    type: "string",
+                    description: "Summary of your action"
+                }
+            },
+            additionalProperties: false,
+        }
     },
     {
         type: "function",

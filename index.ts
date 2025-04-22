@@ -46,43 +46,21 @@ const request = async (client: OpenAI, input: OpenAI.Responses.ResponseInput, pr
 
 async function main() {
     const client = new OpenAI({apiKey: process.env.OPENAI_APIKEY})
-    // always send the previous response back to the API - even though it's only required for function calling
-    // keeps the logic simple and consistent
-    // so, previous_response_id refers to the one BEFORE the last response
-    // prev_ids[0] is the oldest
-    const prev_ids: [string | null, string | null] = [null, null]
+    let prev_id: string | null = null
     const firstInput = await getUserInput()
-
-    // currentInput will be used twice. first, as an input (obviously)
-    // and as the start of inputCache
-    let inputCache: ResponseInput = [...prompt]
-    // as an array because it *might* be empty (when the response only contains function calls for example)
-    // simpler syntax with the spread operator
-    let currentInput: ResponseInput = [{role: 'user', content: firstInput}]
-    // gosh this 'all-new' response API is so trash
-
+    let currentInput: ResponseInput = [...prompt, {role: 'user', content: firstInput}]
 
     // ts warning duh
     let always = true
     while (always) {
-        const response = await request(client, [...inputCache, ...currentInput], prev_ids[0])
-        prev_ids[0] = prev_ids[1]
-        prev_ids[1] = response.id
-        // if there's no reference to begin with
-        // we shouldn't reset the cache
-        if (prev_ids[0]) {
-            inputCache = []
-        }
-
-        inputCache.push(...currentInput)
+        const response = await request(client, currentInput, prev_id)
+        prev_id = response.id
         currentInput = []
 
         for (const [index, output] of response.output.entries()) {
             switch (output.type) {
                 case "message": {
-                    console.log(`Assistant: ${output.content.map(c => c.type == 'output_text' ? c.text : c.refusal).join("\n")}`)
-                    inputCache.push(output)
-
+                    console.log(`Jett: ${output.content.map(c => c.type == 'output_text' ? c.text : c.refusal).join("\n")}`)
                     if (index != response.output.length - 1) break
 
                     const userMessage = await getUserInput()
@@ -90,8 +68,6 @@ async function main() {
                     break
                 }
                 case "function_call": {
-                    inputCache.push(output)
-
                     const result = await processFunction(output)
                     // console.log(result)
 

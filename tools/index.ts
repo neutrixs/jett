@@ -1,9 +1,14 @@
 import OpenAI from "openai";
 import db, {DbParam} from "./database";
-import browser, {BrowserActionParam, BrowserParam, ClickParam, DumpParam} from "./browser";
+import browser, {
+    BrowserEvaluateParam, BrowserOpenParam,
+    BrowserOpenURLParam,
+    ClickParam,
+    DumpParam
+} from "./browser";
 
 export default async function processFunction(call:  OpenAI.Responses.ResponseFunctionToolCall) {
-    let output = ''
+    let output: string
     try {
         const args = JSON.parse(call.arguments)
         if (args.summary) {
@@ -17,25 +22,23 @@ export default async function processFunction(call:  OpenAI.Responses.ResponseFu
             output = JSON.stringify(db.action(args))
             break
         }
-        case 'browser': {
-            const args: BrowserParam = JSON.parse(call.arguments)
-            switch(args.action) {
-                case 'open': {
-                    const result = await browser.open(args.headless)
-                    output = JSON.stringify(result)
-                    break
-                }
-                case 'close': {
-                    const result = await browser.close()
-                    output = JSON.stringify(result)
-                    break
-                }
-            }
+        case 'browser_open': {
+            const args: BrowserOpenParam = JSON.parse(call.arguments)
+            output = JSON.stringify(await browser.open(args.headless))
             break
         }
-        case 'browser_action': {
-            const args: BrowserActionParam = JSON.parse(call.arguments)
-            output = JSON.stringify(await browser.browserAction(args))
+        case 'browser_close': {
+            output = JSON.stringify(await browser.close())
+            break
+        }
+        case 'browser_open_url': {
+            const args: BrowserOpenURLParam = JSON.parse(call.arguments)
+            output = JSON.stringify(await browser.openURL(args.url))
+            break
+        }
+        case 'browser_evaluate': {
+            const args: BrowserEvaluateParam = JSON.parse(call.arguments)
+            output = JSON.stringify(await browser.evaluate(args.command))
             break
         }
         case 'screen_reader_get_snapshot': {

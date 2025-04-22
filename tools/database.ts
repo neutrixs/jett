@@ -59,9 +59,6 @@ export class Database {
             case 'delete': {
                 return this.delete(args.path)
             }
-            case 'retrieve': {
-                return this.retrieve(args.path)
-            }
             // in case the A.I. goes wild
             default: {
                 return {
@@ -120,18 +117,6 @@ export class Database {
         this.sync()
         return {
             success: true
-        }
-    }
-
-    public retrieve(category: string): Result {
-        if (!(category in this.data)) return ({
-            success: false,
-            reason: `Category ${category} does not exist`
-        })
-
-        return {
-            success: true,
-            content: this.data[category]
         }
     }
 
