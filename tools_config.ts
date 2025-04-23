@@ -68,12 +68,6 @@ const tools: OpenAI.Responses.Tool[] = [
             additionalProperties: false
         },
         description: "To close browser"
-    },
-    {
-        type: "computer-preview",
-        display_height: 768,
-        display_width: 1024,
-        environment: 'browser'
     }
     // {
     //     type: "web_search_preview",

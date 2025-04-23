@@ -64,7 +64,7 @@ class BrowserManager {
     public async openURL(url: string): Promise<ActionResult> {
         if (!this.browser) {
             this.browser = await puppeteer.launch({
-                headless: true,
+                headless: false,
                 userDataDir: path.resolve(process.cwd(), "db/browser"),
                 pipe: true,
             })
