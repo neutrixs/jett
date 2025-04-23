@@ -41,7 +41,8 @@ const request = async (client: OpenAI, input: OpenAI.Responses.ResponseInput, pr
     temperature: 0.5,
     max_output_tokens: 1200,
     top_p: 1,
-    store: true
+    store: true,
+    truncation: "auto"
 })
 
 async function main() {

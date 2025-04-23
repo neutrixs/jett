@@ -114,6 +114,7 @@ class BrowserManager {
         try {
             if (!this.page) {
                 this.page = await this.browser.newPage()
+                await this.page.setViewport({width: 1024, height: 768, deviceScaleFactor: 0.75})
             }
             await this.page.goto(url)
             return {
