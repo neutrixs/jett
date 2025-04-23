@@ -45,7 +45,7 @@ const request = async (client: OpenAI, input: OpenAI.Responses.ResponseInput, pr
 })
 
 async function main() {
-    const client = new OpenAI({apiKey: process.env.OPENAI_APIKEY})
+    const client = new OpenAI()
     let prev_id: string | null = null
     const firstInput = await getUserInput()
     let currentInput: ResponseInput = [...prompt, {role: 'user', content: firstInput}]
