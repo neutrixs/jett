@@ -6,8 +6,9 @@ import browser, {
     ClickParam,
     DumpParam
 } from "./browser";
+import {COMPUTER_MODEL, DEFAULT_MODEL, ModelStore} from "../index";
 
-export default async function processFunction(call:  OpenAI.Responses.ResponseFunctionToolCall) {
+export default async function processFunction(call:  OpenAI.Responses.ResponseFunctionToolCall, model: ModelStore) {
     let output: string
     try {
         const args = JSON.parse(call.arguments)
@@ -22,37 +23,15 @@ export default async function processFunction(call:  OpenAI.Responses.ResponseFu
             output = JSON.stringify(db.action(args))
             break
         }
-        case 'browser_open': {
-            const args: BrowserOpenParam = JSON.parse(call.arguments)
-            output = JSON.stringify(await browser.open(args.headless))
-            break
-        }
         case 'browser_close': {
+            model.current = DEFAULT_MODEL
             output = JSON.stringify(await browser.close())
             break
         }
         case 'browser_open_url': {
+            model.current = COMPUTER_MODEL
             const args: BrowserOpenURLParam = JSON.parse(call.arguments)
             output = JSON.stringify(await browser.openURL(args.url))
-            break
-        }
-        case 'browser_evaluate': {
-            const args: BrowserEvaluateParam = JSON.parse(call.arguments)
-            output = JSON.stringify(await browser.evaluate(args.command))
-            break
-        }
-        case 'screen_reader_get_snapshot': {
-            output = JSON.stringify(await browser.get_snapshot())
-            break
-        }
-        case 'screen_reader_dump': {
-            const args: DumpParam = JSON.parse(call.arguments)
-            output = JSON.stringify(browser.dump(args.id, args.chunk))
-            break
-        }
-        case 'screen_reader_click': {
-            const args: ClickParam = JSON.parse(call.arguments)
-            output = JSON.stringify(await browser.click(args.id))
             break
         }
         default: {

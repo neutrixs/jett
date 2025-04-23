@@ -33,15 +33,15 @@ const tools: OpenAI.Responses.Tool[] = [
     },
     {
         type: "function",
-        name: "browser_open",
+        name: "browser_open_url",
         strict: true,
         parameters: {
             type: "object",
-            required: ["headless", "summary"],
+            required: ["summary", "url"],
             properties: {
-                headless: {
-                    type: "boolean",
-                    description: "Whether to use headless mode"
+                url: {
+                    type: "string",
+                    description: "URL to open"
                 },
                 summary: {
                     type: "string",
@@ -70,108 +70,10 @@ const tools: OpenAI.Responses.Tool[] = [
         description: "To close browser"
     },
     {
-        type: "function",
-        name: "browser_open_url",
-        description: "Open a url in the browser",
-        strict: true,
-        parameters: {
-            type: "object",
-            required: ["url", "summary"],
-            properties: {
-                url: {
-                    type: "string",
-                    description: "The url to open"
-                },
-                summary: {
-                    type: "string",
-                    description: "Summary of your action"
-                },
-            },
-            additionalProperties: false
-        }
-    },
-    {
-        type: "function",
-        name: "browser_evaluate",
-        description: "Evaluate commands in the browser console. Only use as last resort",
-        strict: true,
-        parameters: {
-            type: "object",
-            required: ["command", "summary"],
-            properties: {
-                command: {
-                    type: "string",
-                    description: "The command to be passed to the functions. Evaluate is basically like the browser's console, you can do everything there"
-                },
-                summary: {
-                    type: "string",
-                    description: "Summary of your action"
-                }
-            },
-            additionalProperties: false,
-        }
-    },
-    {
-        type: "function",
-        name: "screen_reader_get_snapshot",
-        strict: true,
-        parameters: {
-            type: "object",
-            required: ["summary"],
-            properties: {
-                summary: {
-                    type: "string",
-                    description: "Summary of your action"
-                },
-            },
-            additionalProperties: false
-        }
-    },
-    {
-        type: "function",
-        name: "screen_reader_dump",
-        description: "get list of children inside an element",
-        strict: true,
-        parameters: {
-            type: "object",
-            required: ["id", "summary", "chunk"],
-            properties: {
-                id: {
-                    type: "string",
-                    description: "The ID of the parent element. Supply empty string to get the root elements"
-                },
-                chunk: {
-                    type: "number",
-                    description: "Starts from 0. To go to the next chunk, simply increment the value by 1"
-                },
-                summary: {
-                    type: "string",
-                    description: "Summary of your action"
-                },
-            },
-            additionalProperties: false
-        }
-    },
-    {
-        type: "function",
-        name: "screen_reader_click",
-        description: "click on the element with specific ID",
-        strict: true,
-        parameters: {
-            type: "object",
-            required: ["id", "summary"],
-            properties: {
-                id: {
-                    type: "string",
-                    description: "The ID of the element to click"
-                },
-                summary: {
-                    type: "string",
-                    description: "Summary of your action"
-                },
-            },
-            additionalProperties: false,
-        }
+        type: "computer-preview",
+        display_height: 768,
+        display_width: 1024,
+        environment: 'browser'
     }
     // {
     //     type: "web_search_preview",

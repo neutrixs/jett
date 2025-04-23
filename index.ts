@@ -6,7 +6,12 @@ import processFunction from "./tools/index";
 import {ResponseInput} from "openai/resources/responses/responses";
 import {ResponsesModel} from "openai/resources";
 
-const MODEL: ResponsesModel = "gpt-4.1-mini-2025-04-14"
+export interface ModelStore {
+    current: ResponsesModel
+}
+
+export const COMPUTER_MODEL: ResponsesModel = "computer-use-preview-2025-03-11"
+export const DEFAULT_MODEL: ResponsesModel = "gpt-4.1-mini-2025-04-14"
 
 const getUserInput = async (): Promise<string> => {
     return new Promise((resolve) => {
@@ -28,8 +33,12 @@ const getUserInput = async (): Promise<string> => {
     });
 };
 
+const model: ModelStore = {
+    current: DEFAULT_MODEL,
+}
+
 const request = async (client: OpenAI, input: OpenAI.Responses.ResponseInput, prev_id: string | null) => client.responses.create({
-    model: MODEL,
+    model: model.current,
     previous_response_id: prev_id,
     input,
     text: {
@@ -69,7 +78,7 @@ async function main() {
                     break
                 }
                 case "function_call": {
-                    const result = await processFunction(output)
+                    const result = await processFunction(output, model)
                     // console.log(result)
 
                     currentInput.push({
@@ -78,6 +87,9 @@ async function main() {
                         output: result
                     })
                     break
+                }
+                case "computer_call": {
+
                 }
             }
         }
