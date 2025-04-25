@@ -4,6 +4,7 @@ import stealth from "puppeteer-extra-plugin-stealth"
 import adblocker from "puppeteer-extra-plugin-adblocker"
 import * as path from "node:path";
 import TreeManager, {SimpleResult} from "./tree_manager";
+import {DEFAULT_MODEL, ModelStore, REASONING_MODEL} from "../index";
 
 const MAX_EVAL_CHARS = 1000
 
@@ -38,12 +39,16 @@ class BrowserManager {
         this.tree = null
     }
 
-    public async call(args: BrowserArgs): Promise<SimpleResult | EvalResult> {
+    public async call(args: BrowserArgs, currentModel: ModelStore): Promise<SimpleResult | EvalResult> {
         switch (args.action) {
             case 'open': {
-                return this.open(args.headless)
+                const result = await this.open(args.headless)
+                if (result.success) currentModel.model = REASONING_MODEL
+
+                return result
             }
             case 'close': {
+                currentModel.model = DEFAULT_MODEL
                 return this.close()
             }
             case 'open_url': {

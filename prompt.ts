@@ -64,6 +64,9 @@ Use this as a last resort if none of the tools above works
 
 **Typical flow:** open → open_url → dump → click
 
+DO NOT USE EVALUATE, UNLESS dump doesn't work.
+After you're done with a task, e.g reading the content of a page, please ask the user if they would like to do another task with the browser.
+If all is done, you MUST close the browser.
 
 #Custom User Instruction
 

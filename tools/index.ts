@@ -1,8 +1,9 @@
 import OpenAI from "openai";
 import db, {DbParam} from "./database";
 import browser, {BrowserArgs} from "./browser";
+import {ModelStore} from "../index";
 
-export default async function processFunction(call: OpenAI.Responses.ResponseFunctionToolCall) {
+export default async function processFunction(call: OpenAI.Responses.ResponseFunctionToolCall, currentModel: ModelStore) {
     let output: string
     try {
         const args = JSON.parse(call.arguments)
@@ -19,7 +20,7 @@ export default async function processFunction(call: OpenAI.Responses.ResponseFun
         }
         case 'browser': {
             const args: BrowserArgs = JSON.parse(call.arguments)
-            output = JSON.stringify(await browser.call(args))
+            output = JSON.stringify(await browser.call(args, currentModel))
             break
         }
         default: {

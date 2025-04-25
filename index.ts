@@ -5,8 +5,16 @@ import prompt from "./prompt";
 import processFunction from "./tools/index";
 import {ResponseInput} from "openai/resources/responses/responses";
 import {ResponsesModel} from "openai/resources";
+export interface ModelStore {
+    model: ResponsesModel
+}
 
-const MODEL: ResponsesModel = "gpt-4.1-mini-2025-04-14"
+export const DEFAULT_MODEL: ResponsesModel = "gpt-4.1-mini-2025-04-14"
+export const REASONING_MODEL: ResponsesModel = "o4-mini-2025-04-16"
+
+const currentModel: ModelStore = {
+    model: DEFAULT_MODEL
+}
 
 const getUserInput = async (): Promise<string> => {
     return new Promise((resolve) => {
@@ -28,8 +36,21 @@ const getUserInput = async (): Promise<string> => {
     });
 };
 
+const defaultParam = {
+    temperature: 0.5
+}
+
+const reasoningParam = {
+    reasoning: {
+        effort: "medium",
+        summary: null
+    }
+}
+
+// ts can shut up 😇😇
+//@ts-ignore
 const request = async (client: OpenAI, input: OpenAI.Responses.ResponseInput, prev_id: string | null) => client.responses.create({
-    model: MODEL,
+    model: currentModel.model,
     previous_response_id: prev_id,
     input,
     text: {
@@ -38,10 +59,10 @@ const request = async (client: OpenAI, input: OpenAI.Responses.ResponseInput, pr
         }
     },
     tools: tools_config,
-    temperature: 0.5,
     max_output_tokens: 1200,
     top_p: 1,
-    store: true
+    store: true,
+    ...(currentModel.model == REASONING_MODEL ? reasoningParam : defaultParam)
 })
 
 async function main() {
@@ -53,9 +74,19 @@ async function main() {
     // ts warning duh
     let always = true
     while (always) {
+        // remove reasoning items if the model isn't a reasoning one
+        // if it's a function call apparently we still have to include it 🤔
+        // if (currentModel.model != REASONING_MODEL && currentInput[currentInput.length - 1].type != 'function_call') {
+        //     currentInput = currentInput.filter(i => i.type != 'reasoning')
+        // }
+
         const response = await request(client, currentInput, prev_id)
-        prev_id = response.id
-        currentInput = []
+        if (currentModel.model != REASONING_MODEL){
+            prev_id = response.id
+            currentInput = []
+        } else {
+            currentInput.push(...response.output)
+        }
 
         for (const [index, output] of response.output.entries()) {
             switch (output.type) {
@@ -68,7 +99,7 @@ async function main() {
                     break
                 }
                 case "function_call": {
-                    const result = await processFunction(output)
+                    const result = await processFunction(output, currentModel)
                     // console.log(result)
 
                     currentInput.push({
