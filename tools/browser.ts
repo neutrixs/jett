@@ -10,31 +10,13 @@ const MAX_EVAL_CHARS = 1000
 puppeteer.use(stealth())
 puppeteer.use(adblocker({blockTrackers: true}))
 
-export interface BrowserOpenParam {
-    headless: boolean
-}
-
-export interface BrowserOpenURLParam {
-    url: string
-}
-
-export interface BrowserEvaluateParam {
-    command: string
-}
-
-export interface DumpParam {
-    id: string
-    chunk: number
-}
-
-export interface ClickParam {
-    id: string
-}
-
-interface ActionResult {
-    success: boolean,
-    reason?: string,
-    content?: string,
+export interface BrowserArgs {
+    action: 'open' | 'close' | 'open_url' | 'get_snapshot' | 'dump' | 'click' | 'evaluate'
+    headless?: boolean
+    id?: string
+    chunk?: number
+    url?: string
+    command?: string
 }
 
 interface EvalResult {
@@ -43,11 +25,6 @@ interface EvalResult {
     content?: string,
     currentURL?: string,
     pageTitle?: string,
-}
-
-interface OpenCloseResult {
-    success: boolean
-    reason?: string
 }
 
 class BrowserManager {
@@ -59,6 +36,55 @@ class BrowserManager {
         this.browser = null
         this.page = null
         this.tree = null
+    }
+
+    public async call(args: BrowserArgs): Promise<SimpleResult | EvalResult> {
+        switch (args.action) {
+            case 'open': {
+                return this.open(args.headless)
+            }
+            case 'close': {
+                return this.close()
+            }
+            case 'open_url': {
+                if (!args.url) return {
+                    success: false,
+                    reason: "URL is not provided"
+                }
+                return this.openURL(args.url)
+            }
+            case 'get_snapshot': {
+                return this.get_snapshot()
+            }
+            case 'dump': {
+                if (args.chunk === undefined) return {
+                    success: false,
+                    reason: "Chunk is not provided. Provide 0 instead"
+                }
+
+                return this.dump(args.id ?? "", args.chunk)
+            }
+            case 'click': {
+                if (!args.id) return {
+                    success: false,
+                    reason: "ID is not provided"
+                }
+                return this.click(args.id)
+            }
+            case 'evaluate': {
+                if (!args.command) return {
+                    success: false,
+                    reason: "Command is not provided"
+                }
+                return this.evaluate(args.command)
+            }
+            default: {
+                return {
+                    success: false,
+                    reason: "Invalid action"
+                }
+            }
+        }
     }
 
     public async get_snapshot(): Promise<SimpleResult> {
@@ -103,7 +129,7 @@ class BrowserManager {
         return await this.tree.click(id)
     }
 
-    public async openURL(url: string): Promise<ActionResult> {
+    public async openURL(url: string): Promise<SimpleResult> {
         if (!this.browser) {
             return {
                 success: false,
@@ -160,7 +186,7 @@ class BrowserManager {
         }
     }
 
-    public open(headless?: boolean): Promise<OpenCloseResult> {
+    public open(headless?: boolean): Promise<SimpleResult> {
         return new Promise(r => {
             if (this.browser) {
                 r({success: true})
@@ -181,7 +207,7 @@ class BrowserManager {
         })
     }
 
-    public close(): Promise<OpenCloseResult> {
+    public close(): Promise<SimpleResult> {
         return new Promise(r => {
             if (!this.browser) {
                 r({success: true})
